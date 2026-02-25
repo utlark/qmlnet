@@ -9,6 +9,17 @@ namespace Qml.Net.Runtimes
     {
         public static void ConfigureRuntimeDirectory(string directory)
         {
+            var runtimeTarget = GetCurrentRuntimeTarget();
+            if (runtimeTarget == RuntimeTarget.Unsupported)
+            {
+                throw new Exception("Unsupported runtime target");
+            }
+
+            ConfigureRuntimeDirectory(directory, RuntimeTargetToString(runtimeTarget));
+        }
+
+        public static void ConfigureRuntimeDirectory(string directory, string runtimeTargetString)
+        {
             if (string.IsNullOrEmpty(directory))
             {
                 throw new ArgumentNullException(nameof(directory));
@@ -27,7 +38,7 @@ namespace Qml.Net.Runtimes
             }
 
             var version = File.ReadAllText(versionFile).TrimEnd(Environment.NewLine.ToCharArray());
-            var expectedVersion = $"{QmlNetConfig.QtBuildVersion}-{RuntimeTargetToString(GetCurrentRuntimeTarget())}";
+            var expectedVersion = $"{QmlNetConfig.QtBuildVersion}-{runtimeTargetString}";
 
             if (version != expectedVersion)
             {
@@ -150,6 +161,55 @@ namespace Qml.Net.Runtimes
             }
 
             throw new Exception("Unknown platform, can't configure runtime directory");
+        }
+
+        /// <summary>Custom configurations for unsupported runtime targets</summary>
+        /// <param name="libDirectory">Directory where QT library binaries are located</param>
+        /// <param name="qmlDirectory">QML directory</param>
+        /// <param name="pluginsDirectory">QT plugins directory</param>
+        /// <param name="preloadFilePath">Preload.txt file placement</param>
+        /// <example>
+        ///     For Windows it would be like:
+        ///     <code>RuntimeManager.ConfigureRuntimeDirectory("path_to_qt/bin", "path_to_qt/qml", "path_to_qt/plugins");</code>
+        ///     For Linux: <code>RuntimeManager.ConfigureRuntimeDirectory("/usr/lib", "/usr/qml/", "/usr/lib/qt/plugins/");</code>
+        /// </example>
+        public static void ConfigureRuntimeDirectory(string libDirectory, string qmlDirectory, string pluginsDirectory, string preloadFilePath)
+        {
+            if (!Directory.Exists(pluginsDirectory))
+            {
+                throw new Exception($"Plugins directory didn't exist: {pluginsDirectory}");
+            }
+            Environment.SetEnvironmentVariable("QT_PLUGIN_PATH", pluginsDirectory);
+
+            if (!Directory.Exists(qmlDirectory))
+            {
+                throw new Exception($"QML directory didn't exist: {qmlDirectory}");
+            }
+            Environment.SetEnvironmentVariable("QML2_IMPORT_PATH", qmlDirectory);
+
+            if (!Directory.Exists(libDirectory))
+            {
+                throw new Exception($"The lib directory didn't exist: {libDirectory}");
+            }
+
+            if (!File.Exists(preloadFilePath))
+            {
+                throw new Exception($"The preload.txt file didn't exist: {preloadFilePath}");
+            }
+
+            var libsToPreload = File.ReadAllLines(preloadFilePath)
+                    .Where(x => !string.IsNullOrEmpty(x))
+                    .Select(x => Path.Combine(libDirectory, x))
+                    .ToList();
+            var platformLoader = NetNativeLibLoader.Loader.PlatformLoaderBase.SelectPlatformLoader();
+            foreach (var libToPreload in libsToPreload)
+            {
+                var libHandler = platformLoader.LoadLibrary(libToPreload);
+                if (libHandler == IntPtr.Zero)
+                {
+                    throw new Exception($"Unabled to preload library: {libToPreload}");
+                }
+            }
         }
     }
 }

@@ -2,7 +2,31 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <PackageId>Qml.Net</PackageId>
+    <LangVersion>14</LangVersion>
   </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <WarningLevel>8</WarningLevel>
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+
+    <TrimMode>partial</TrimMode>
+    <PublishRelease>true</PublishRelease>
+    <PublishTrimmed>true</PublishTrimmed>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishReadyToRun>true</PublishReadyToRun>
+
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <NoWarn>1701;1702;IL2026</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="preload.linux.txt"/>
+    <Content Include="preload.linux.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="NetNativeLibLoader" Version="0.1.1" />
