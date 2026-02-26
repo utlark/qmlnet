@@ -16,7 +16,13 @@ namespace Qml.Net.Runtimes
         // ReSharper disable once MemberCanBePrivate.Global
         // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public static BuildRuntimeUrlDelegate BuildRuntimeUrl = (qtVersion, target)
-            => $"https://github.com/qmlnet/qt-runtimes/releases/download/releases/{qtVersion}-{RuntimeTargetToString(target)}-runtime.tar.gz";
+            =>
+        {
+            if (target == RuntimeTarget.Unsupported)
+                throw new Exception("Unsupported runtime target");
+
+            return $"https://github.com/qmlnet/qt-runtimes/releases/download/releases/{qtVersion}-{RuntimeTargetToString(target)}-runtime.tar.gz";
+        };
 
         private static string RuntimeTargetToString(RuntimeTarget target)
         {
@@ -29,7 +35,7 @@ namespace Qml.Net.Runtimes
                 case RuntimeTarget.OSX64:
                     return "osx-x64";
                 case RuntimeTarget.Unsupported:
-                    throw new Exception("Unsupported target");
+                    return "unsupported";
                 default:
                     throw new Exception($"Unknown target {target}");
             }
@@ -137,6 +143,9 @@ namespace Qml.Net.Runtimes
 
             var currentTarget = GetCurrentRuntimeTarget();
             var version = $"{QmlNetConfig.QtBuildVersion}-{RuntimeTargetToString(currentTarget)}";
+
+            if (currentTarget == RuntimeTarget.Unsupported)
+                throw new Exception("Can not automatically discover or download qt runtime for Unsupported target");
 
             // Let's try to download and install the Qt runtime into the users directory.
             var destinationDirectory = Path.Combine(GetPotentialRuntimesDirectories(RuntimeSearchLocation.UserDirectory).Single(), version);
