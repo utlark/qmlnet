@@ -4,3 +4,7 @@
 [submodule "src/native/QmlNet"]
 	path = src/native/QmlNet
 	url = https://github.com/qmlnet/qmlnet-native
+[submodule "net-native-lib-loader"]
+	path = net-native-lib-loader
+	url = https://github.com/utlark/net-native-lib-loader
+	branch = npoSaut

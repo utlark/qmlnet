@@ -1,36 +1,43 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
-    <PackageId>Qml.Net</PackageId>
-    <LangVersion>14</LangVersion>
-  </PropertyGroup>
+    <PropertyGroup>
+        <Nullable>disable</Nullable>
+        <PackageId>Qml.Net</PackageId>
+        <IsPackable>false</IsPackable>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <NeutralLanguage>en-US</NeutralLanguage>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
+        <LangVersion>14</LangVersion>
+    </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <WarningLevel>8</WarningLevel>
-    <DebugType>embedded</DebugType>
-    <DebugSymbols>true</DebugSymbols>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <WarningLevel>8</WarningLevel>
+        <DebugType>embedded</DebugType>
+        <DebugSymbols>true</DebugSymbols>
 
-    <TrimMode>partial</TrimMode>
-    <PublishRelease>true</PublishRelease>
-    <PublishTrimmed>true</PublishTrimmed>
-    <PublishSingleFile>true</PublishSingleFile>
-    <PublishReadyToRun>true</PublishReadyToRun>
+        <TrimMode>partial</TrimMode>
+        <PublishRelease>true</PublishRelease>
+        <PublishSingleFile>true</PublishSingleFile>
+        <PublishReadyToRun>true</PublishReadyToRun>
 
-    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
-    <NoWarn>1701;1702;IL2026</NoWarn>
-  </PropertyGroup>
+        <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+        <NoWarn>1701;1702;IL2026</NoWarn>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="preload.linux.txt"/>
-    <Content Include="preload.linux.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+    <ItemGroup>
+        <None Remove="preload.linux.txt"/>
+        <Content Include="preload.linux.txt">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-    <PackageReference Include="NetNativeLibLoader" Version="0.1.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CSharp" Version="4.7.0"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.4"/>
+        <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\net-native-lib-loader\src\NetNativeLibLoader\NetNativeLibLoader.csproj"/>
+    </ItemGroup>
 </Project>
